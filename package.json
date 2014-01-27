@@ -1,30 +1,40 @@
 {
-  "name": "light-traits",
-  "id": "light-traits",
-  "version": "0.2.0",
-  "description": "Light traits in javascript with some syntax sugar.",
-  "homepage": "http://github.com/Gozala/light-traits/",
-  "keywords": ["traits"],
-  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/Gozala/light-traits.git"
-  },
-  "bugs": {
-    "web": "http://github.com/Gozala/light-traits/issues/"
-  },
-  "main": "./light-traits.js",
-  "scripts": {
-    "test": "node tests/test-all.js"
+  "name": "trait",
+  "description": "An implementation of traits in JavaScript",
+  "version": "0.1.0",
+  "author": "Alexander Pope <alexander.pope@nrk.no>",
+  "dependencies": {
+    "lodash.bind": "~2.4.0",
+    "lodash.foreach": "~2.4.0",
+    "lodash.keys": "~2.4.0"
   },
   "devDependencies": {
-    "test": ">=0.0.10"
+    "mocha": "*",
+    "expect.js": "*",
+    "buddy": "*",
+    "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
+    "term-canvas": "*",
+    "lodash.some": "*"
   },
-  "engines": {
-    "node": ">=0.4.x"
+  "main": "index.js",
+  "repository": "git://github.com/YR/trait.git",
+  "license": "MIT",
+  "scripts": {
+    "test": "buddy build && mocha-phantomjs test/test-runner.html",
+    "sauce": "node test/sauce.js"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "http://jeditoolkit.com/LICENSE"
-  }]
+  "buddy": {
+    "build": {
+      "js": {
+        "targets": [{
+          "input": "test/src/index.js",
+          "output": "test/trait.js",
+          "boilerplate": true
+        }]
+      }
+    },
+    "server": {
+      "port": 8000
+    }
+  }
 }
