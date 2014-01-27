@@ -230,5 +230,41 @@ describe('trait', function () {
 				}
 			)).to.be.ok();
 		});
+		it('should handle composition of identical required properties without conflict', function () {
+			expect(equalTraits(
+				trait.compose(
+					trait({
+						a:trait.required,
+						b:1
+					}),
+					trait({
+						a:trait.required,
+						c:method
+					})
+				),
+				{
+					a: Required(),
+					b: Data(1),
+					c: Method(method)
+				}
+			)).to.be.ok();
+		});
+		it('should handle composition of a satisfied required property', function () {
+			expect(equalTraits(
+				trait.compose(
+					trait({
+						a:trait.required,
+						b:1
+					}),
+					trait({
+						a:method
+					})
+				),
+				{
+					a: Method(method),
+					b: Data(1)
+				}
+			)).to.be.ok();
+		});
 	})
 });
