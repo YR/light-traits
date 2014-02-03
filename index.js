@@ -97,6 +97,7 @@ var getOwnProperties = Object.getOwnProperties
 if (!Object.create) Object.create = objectCreate;
 if (!Object.getOwnPropertyNames) Object.getOwnPropertyNames = getOwnPropertyNames;
 if (!Object.getOwnProperties) Object.getOwnProperties = getOwnProperties;
+if (!Object.getPrototypeOf) Object.getPrototypeOf = getPrototypeOf;
 
 
 /**
