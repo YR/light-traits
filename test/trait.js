@@ -1729,6 +1729,7 @@ require.register('trait', function(module, exports, require) {
   if (!Object.create) Object.create = objectCreate;
   if (!Object.getOwnPropertyNames) Object.getOwnPropertyNames = getOwnPropertyNames;
   if (!Object.getOwnProperties) Object.getOwnProperties = getOwnProperties;
+  if (!Object.getPrototypeOf) Object.getPrototypeOf = getPrototypeOf;
   
   
   /**
