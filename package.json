@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "author": "Alexander Pope <alexander.pope@nrk.no>",
   "dependencies": {
-    "lodash.bind": "~2.4.0",
-    "lodash.foreach": "~2.4.0",
-    "lodash.keys": "~2.4.0"
+    "lodash.bind": "^2.4.0",
+    "lodash.foreach": "^2.4.0",
+    "lodash.keys": "^2.4.0"
   },
   "devDependencies": {
     "mocha": "*",
