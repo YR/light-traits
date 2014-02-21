@@ -2339,6 +2339,6 @@ require.register('trait', function(module, exports, require) {
 });
 require.register('test/src/index', function(module, exports, require) {
   require('lodash.some');
-  require('../../index');
+  require('trait');
   
 });
