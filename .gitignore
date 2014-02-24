@@ -1,2 +1,15 @@
-node_modules
+node_modules/expect.js/*
+!node_modules/expect.js/index.js
+node_modules/mocha/*
+!node_modules/mocha/mocha.js
+!node_modules/mocha/mocha.css
+node_modules/mocha-sauce/*
+!node_modules/mocha-sauce/client.js
+node_modules/.bin
+node_modules/buddy
+node_modules/lodash.bind
+node_modules/lodash.foreach
+node_modules/lodash.keys
+node_modules/lodash.some
+node_modules/term-canvas
 .buddy-filelog
