@@ -19,6 +19,7 @@
   "main": "index.js",
   "repository": "git://github.com/YR/trait.git",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "test": "buddy build && mocha-phantomjs test/test-runner.html",
     "sauce": "node test/sauce.js"
