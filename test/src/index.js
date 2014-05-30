@@ -1,2 +1,2 @@
-require('lodash.some');
+require('lodash-node/compat/collections/some');
 require('../../index');

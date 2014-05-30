@@ -1,4 +1,4 @@
-var some = require('lodash.some')
+var some = require('lodash-node/compat/collections/some')
 	, trait, expect;
 
 try {

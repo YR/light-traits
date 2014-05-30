@@ -1,6 +1,6 @@
-var forEach = require('lodash.foreach')
-	, bind = require('lodash.bind')
-	, keys = require('lodash.keys')
+var forEach = require('lodash-node/compat/collections/forEach')
+	, bind = require('lodash-node/compat/functions/bind')
+	, keys = require('lodash-node/compat/objects/keys')
 	, owns = bind(Function.prototype.call, Object.prototype.hasOwnProperty);
 
 /* Feature tests */
