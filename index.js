@@ -93,13 +93,6 @@ var getOwnProperties = Object.getOwnProperties
 			return map;
 		};
 
-// Polyfill
-if (!Object.create) Object.create = objectCreate;
-if (!Object.getOwnPropertyNames) Object.getOwnPropertyNames = getOwnPropertyNames;
-if (!Object.getOwnProperties) Object.getOwnProperties = getOwnProperties;
-if (!Object.getPrototypeOf) Object.getPrototypeOf = getPrototypeOf;
-
-
 /**
  * Whether or not given property descriptors are equivalent. They are
  * equivalent either if both are marked as 'conflict' or 'required' property
@@ -274,7 +267,7 @@ function exclude (names, trait) {
 		}
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
@@ -372,7 +365,7 @@ function rename (renames, trait) {
 		}
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
@@ -463,7 +456,7 @@ function trait (object) {
 			}
 		});
 
-		trait = Object.create(Trait.prototype, map);
+		trait = objectCreate(Trait.prototype, map);
 	}
 
 	return trait;
@@ -514,7 +507,7 @@ function compose () {
 		});
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
@@ -589,7 +582,7 @@ function verifiedDefineProperties (object, properties) {
 function create (prototype, properties) {
 
 	// Creating an instance of the given `prototype`.
-	var object = Object.create(prototype);
+	var object = objectCreate(prototype);
 
 	// Overriding `toString`, `constructor` methods if they are just inherited
 	// from `Object.prototype` with a same named methods of the `Trait.prototype`
@@ -694,7 +687,7 @@ freeze(compose.prototype);
  * Constant singleton, representing placeholder for required properties.
  * @type {Object}
  */
-Trait.required = freeze(Object.create(Object.prototype, {
+Trait.required = freeze(objectCreate(Object.prototype, {
 	toString: {
 		value: freeze(function toString() {
 			return '<Trait.required>';
