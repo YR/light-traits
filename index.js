@@ -556,9 +556,12 @@ function Trait (object) {
 	return trait;
 }
 
-Trait.prototype.create = function (prototype) {
+Trait.prototype.create = function (prototype, properties) {
 	prototype = prototype || Object.prototype;
-	return create(prototype, this);
+	properties = (properties != null)
+		? compose(Trait(properties), this)
+		: this;
+	return create(prototype, properties);
 };
 
 Trait.prototype.resolve = function (resolutions) {

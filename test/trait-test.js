@@ -515,6 +515,12 @@ describe('trait', function () {
 				expect(Object.keys(o1)).to.have.length(2);
 			}
 		});
+		it('should compose passed in properties', function () {
+			var o1 = T({
+				a: T.required
+			}).create(Object.prototype, {a: 1});
+			expect(o1.a).to.equal(1);
+		});
 		it('should instantiate an object that inherits from Array.prototype', function () {
 			var o2 = T({}).create(Array.prototype);
 			expect(Object.getPrototypeOf(o2)).to.equal(Array.prototype);
