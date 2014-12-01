@@ -2,9 +2,15 @@
   "name": "trait",
   "description": "An implementation of traits in JavaScript",
   "version": "0.4.0",
-  "author": "Alexander Pope <alexander.pope@nrk.no>",
+  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
+  "contributors": [
+    {
+      "name": "Alexander Pope",
+      "email": "alexander.pope@nrk.no"
+    }
+  ],
   "dependencies": {
-    "lodash-node": "~2.4.0"
+    "lodash-node": "2.4.1"
   },
   "devDependencies": {
     "mocha": "*",
