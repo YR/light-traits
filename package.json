@@ -10,12 +10,12 @@
     }
   ],
   "dependencies": {
-    "lodash-node": "2.4.1"
+    "lodash-compat": "3.0.0"
   },
   "devDependencies": {
     "mocha": "*",
     "expect.js": "*",
-    "buddy": "popeindustries/buddy",
+    "buddy": "popeindustries/buddy#2.1.0-beta",
     "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
     "term-canvas": "*"
   },
