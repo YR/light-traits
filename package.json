@@ -1,24 +1,28 @@
 {
   "name": "trait",
   "description": "An implementation of traits in JavaScript",
-  "version": "0.1.0",
-  "author": "Alexander Pope <alexander.pope@nrk.no>",
+  "version": "1.0.0",
+  "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
+  "contributors": [
+    {
+      "name": "Alexander Pope",
+      "email": "alexander.pope@nrk.no"
+    }
+  ],
   "dependencies": {
-    "lodash.bind": "^2.4.0",
-    "lodash.foreach": "^2.4.0",
-    "lodash.keys": "^2.4.0"
+    "lodash-compat": "3.0.0"
   },
   "devDependencies": {
     "mocha": "*",
     "expect.js": "*",
-    "buddy": "*",
+    "buddy": "popeindustries/buddy#2.1.0-beta",
     "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
-    "term-canvas": "*",
-    "lodash.some": "*"
+    "term-canvas": "*"
   },
   "main": "index.js",
   "repository": "git://github.com/YR/trait.git",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "test": "buddy build && mocha-phantomjs test/test-runner.html",
     "sauce": "node test/sauce.js"

@@ -1,6 +1,6 @@
-var forEach = require('lodash.foreach')
-	, bind = require('lodash.bind')
-	, keys = require('lodash.keys')
+var forEach = require('lodash-compat/collection/forEach')
+	, bind = require('lodash-compat/function/bind')
+	, keys = require('lodash-compat/object/keys')
 	, owns = bind(Function.prototype.call, Object.prototype.hasOwnProperty);
 
 /* Feature tests */
@@ -8,7 +8,7 @@ var SUPPORTS_ACCESSORS = (function () {
 	try {
 		var test = {};
 		Object.defineProperty(test, 'x', {
-			get: function() {
+			get: function () {
 				return 1;
 			}
 		});
@@ -17,9 +17,8 @@ var SUPPORTS_ACCESSORS = (function () {
 		return false;
 	}
 })();
-// IE8 implements Obejct.defineProperty and Object.getOwnPropertyDescriptor
-// only for DOM objects.
 var SUPPORTS_GET_OWN_PROP_DESCRIPTOR = (function () {
+	// IE8 implements Obejct.defineProperty and Object.getOwnPropertyDescriptor only for DOM objects.
 	try {
 		if (Object.getOwnPropertyDescriptor) {
 			var test = {x: 1};
@@ -93,13 +92,6 @@ var getOwnProperties = Object.getOwnProperties
 			return map;
 		};
 
-// Polyfill
-if (!Object.create) Object.create = objectCreate;
-if (!Object.getOwnPropertyNames) Object.getOwnPropertyNames = getOwnPropertyNames;
-if (!Object.getOwnProperties) Object.getOwnProperties = getOwnProperties;
-if (!Object.getPrototypeOf) Object.getPrototypeOf = getPrototypeOf;
-
-
 /**
  * Whether or not given property descriptors are equivalent. They are
  * equivalent either if both are marked as 'conflict' or 'required' property
@@ -129,8 +121,7 @@ function equalDescriptors (actual, expected) {
 		!!actual.writable === !!expected.writable;
 }
 
-// Utilities that throw exceptions for properties that are marked
-// as 'required' or 'conflict' properties.
+// Utilities that throw exceptions for properties that are marked as 'required' or 'conflict' properties.
 function throwConflictPropertyError (name) {
 	throw new Error('Remaining conflicting property: ' + name);
 }
@@ -193,55 +184,23 @@ function ConflictPropertyDescriptor (name) {
 }
 
 /**
- * Tests if property is marked as `required` property.
+ * Determin if property is marked as `required` property.
+ * @param {Object} object
+ * @param {String} name
+ * @returns {Boolean}
  */
 function isRequiredProperty (object, name) {
 	return !!object[name].required;
 }
 
 /**
- * Tests if property is marked as `conflict` property.
+ * Determin if property is marked as `conflict` property.
+ * @param {Object} object
+ * @param {String} name
+ * @returns {Boolean}
  */
 function isConflictProperty (object, name) {
 	return !!object[name].conflict;
-}
-
-/**
- * Function tests whether or not method of the `source` object with a given
- * `name` is inherited from `Object.prototype`.
- */
-function isBuiltInMethod (name, source) {
-	var target = Object.prototype[name];
-
-	// If methods are equal then we know it's `true`.
-	return target == source
-		// If `source` object comes form a different sandbox `==` will evaluate
-		// to `false`, in that case we check if functions names and sources match.
-		|| (String(target) === String(source) && target.name === source.name);
-}
-
-/**
- * Function overrides `toString` and `constructor` methods of a given `target`
- * object with a same-named methods of a given `source` if methods of `target`
- * object are inherited / copied from `Object.prototype`.
- * @see create
- */
-function overrideBuiltInMethods (target, source) {
-	if (isBuiltInMethod('toString', target.toString)) {
-		defineProperty(target, 'toString',  {
-			value: source.toString,
-			configurable: true,
-			enumerable: false
-		});
-	}
-
-	if (isBuiltInMethod('constructor', target.constructor)) {
-		defineProperty(target, 'constructor', {
-			value: source.constructor,
-			configurable: true,
-			enumerable: false
-		});
-	}
 }
 
 /**
@@ -259,7 +218,7 @@ function overrideBuiltInMethods (target, source) {
 function exclude (names, trait) {
 	var map = {};
 
-	forEach(keys(trait), function(name) {
+	forEach(keys(trait), function (name) {
 
 		// If property is not excluded (the array of names does not contain it),
 		// or it is a 'required' property, copy it to the property descriptor `map`
@@ -274,11 +233,11 @@ function exclude (names, trait) {
 		}
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
- * Composes new instance of `Trait` with a properties of a given `trait`,
+ * Composes new instance of `Trait` with properties of a given `trait`,
  * except that all properties whose name is an own property of `renames` will
  * be renamed to `renames[name]` and a `'required'` property for name will be
  * added instead.
@@ -310,7 +269,7 @@ function rename (renames, trait) {
 	// Loop over all the properties of the given `trait` and copy them to a
 	// property descriptor `map` that will be used for creation of resulting
 	// trait. Also renaming properties in the `map` as specified by `renames`.
-	forEach(keys(trait), function(name) {
+	forEach(keys(trait), function (name) {
 		var alias;
 
 		// If the property is in the `renames` map, and it isn't a 'required'
@@ -372,7 +331,7 @@ function rename (renames, trait) {
 		}
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
@@ -389,7 +348,7 @@ function resolve (resolutions, trait) {
 
 	// Go through each mapping in `resolutions` object and distribute it either
 	// to `renames` or `exclusions`.
-	forEach(keys(resolutions), function(name) {
+	forEach(keys(resolutions), function (name) {
 
 		// If `resolutions[name]` is a truthy value then it's a mapping old -> new
 		// so we copy it to `renames` map.
@@ -409,67 +368,6 @@ function resolve (resolutions, trait) {
 }
 
 /**
- * Create a Trait (a custom property descriptor map) that represents the given
- * `object`'s own properties. Property descriptor map is a 'custom', because it
- * inherits from `Trait.prototype` and it's property descriptors may contain
- * two attributes that is not part of the ES5 specification:
- *
- *  - 'required' (this property must be provided by another trait
- *    before an instance of this trait can be created)
- *  - 'conflict' (when the trait is composed with another trait,
- *    a unique value for this property is provided by two or more traits)
- *
- * Data properties bound to the `Trait.required` singleton exported by
- * this module will be marked as 'required' properties.
- *
- * @param {Object} object
- *    Map of properties to compose trait from.
- * @returns {Trait}
- *    Trait / Property descriptor map containing all the own properties of the
- *    given argument.
- */
-function trait (object) {
-	var trait = object
-		, map;
-
-	if (!(object instanceof Trait)) {
-		// If passed `object` is not already an instance of `Trait` we create
-		// a property descriptor `map` containing descriptors of own properties of
-		// a given `object`. `map` is used to create a `Trait` instance after all
-		// properties are mapped. Please note that we can't create trait and then
-		// just copy properties into it since that will fails for inherited
-		// 'read-only' properties.
-		map = {};
-
-		// Each own property of a given `object` is mapped to a data property, who's
-		// value is a property descriptor.
-		forEach(keys(object), function (name) {
-
-			// If property of an `object` is equal to a `Trait.required`, it means
-			// that it was marked as 'required' property, in which case we map it
-			// to 'required' property.
-			if (Trait.required == getOwnPropertyDescriptor(object, name).value) {
-				map[name] = {
-					value: RequiredPropertyDescriptor(name),
-					enumerable: true
-				};
-
-			// Otherwise property is mapped to it's property descriptor.
-			} else {
-				map[name] = {
-					value: getOwnPropertyDescriptor(object, name),
-					enumerable: true
-				};
-			}
-		});
-
-		trait = Object.create(Trait.prototype, map);
-	}
-
-	return trait;
-}
-
-/**
  * Compose a property descriptor map that inherits from `Trait.prototype` and
  * contains property descriptors for all the own properties of the passed
  * traits.
@@ -486,9 +384,9 @@ function compose () {
 	var map = {};
 
 	// Properties of each passed trait are copied to the composition.
-	forEach(arguments, function(trait) {
+	forEach(arguments, function (trait) {
 		// Copying each property of the given trait.
-		forEach(keys(trait), function(name) {
+		forEach(keys(trait), function (name) {
 			// If `map` already owns a property with the `name` and it is not marked 'required'.
 			if (owns(map, name) && !map[name].value.required) {
 
@@ -514,11 +412,11 @@ function compose () {
 		});
 	});
 
-	return Object.create(Trait.prototype, map);
+	return objectCreate(Trait.prototype, map);
 }
 
 /**
- *  `defineProperties` is like `Object.defineProperties`, except that it
+ *  `verifiedDefineProperties` is like `Object.defineProperties`, except that it
  *  ensures that:
  *    - An exception is thrown if any property in a given `properties` map
  *      is marked as 'required' property and same named property is not
@@ -533,7 +431,6 @@ function compose () {
  *    `object` that was passed as a first argument.
  */
 function verifiedDefineProperties (object, properties) {
-
 	// Create a map into which we will copy each verified property from the given
 	// `properties` description map. We use it to verify that none of the
 	// provided properties is marked as a 'conflict' property and that all
@@ -543,7 +440,7 @@ function verifiedDefineProperties (object, properties) {
 
 	// Coping each property from a given `properties` descriptor map to a
 	// verified map of property descriptors.
-	forEach(keys(properties), function(name) {
+	forEach(keys(properties), function (name) {
 
 		// If property is marked as 'required' property and we don't have a same
 		// named property in a given `object` we throw an exception. If `object`
@@ -587,17 +484,11 @@ function verifiedDefineProperties (object, properties) {
  *    properties defined by a given `properties` descriptor map.
  */
 function create (prototype, properties) {
-
 	// Creating an instance of the given `prototype`.
-	var object = Object.create(prototype);
-
-	// Overriding `toString`, `constructor` methods if they are just inherited
-	// from `Object.prototype` with a same named methods of the `Trait.prototype`
-	// that will have more relevant behavior.
-	overrideBuiltInMethods(object, Trait.prototype);
+	var object = objectCreate(prototype);
 
 	// Trying to define given `properties` on the `object`. We use our custom
-	// `defineProperties` function instead of build-in `Object.defineProperties`
+	// `verifiedDefineProperties` function instead of build-in `Object.defineProperties`
 	// that behaves exactly the same, except that it will throw if any
 	// property in the given `properties` descriptor is marked as 'required' or
 	// 'conflict' property.
@@ -605,102 +496,86 @@ function create (prototype, properties) {
 }
 
 /**
- * Composes new trait. If two or more traits have own properties with the
- * same name, the new trait will contain a 'conflict' property for that name.
- * 'compose' is a commutative and associative operation, and the order of its
- * arguments is not significant.
+ * Create a Trait (a custom property descriptor map) that represents the given
+ * `object`'s own properties. Property descriptor map is 'custom' because it's
+ * property descriptors may contain two attributes that are not part of the ES5
+ * specification:
  *
- * **Note:** Use `Trait.compose` instead of calling this function with more
- * than one argument. The multiple-argument functionality is strictly for
- * backward compatibility.
+ *  - 'required' (this property must be provided by another trait
+ *    before an instance of this trait can be created)
+ *  - 'conflict' (when the trait is composed with another trait,
+ *    a unique value for this property is provided by two or more traits)
  *
- * @params {Object} trait
- *    Takes traits as an arguments
+ * Data properties bound to the `Trait.required` singleton exported by
+ * this module will be marked as 'required' properties.
+ *
+ * @param {Object} object
+ *    Map of properties to compose trait from.
  * @returns {Object}
- *    New trait containing the combined own properties of all the traits.
- * @example
- *    var newTrait = compose(trait_1, trait_2, ..., trait_N)
+ *    Property descriptor map containing all the own properties of the
+ *    given argument.
  */
-function Trait (trait1, trait2) {
+function Trait (object) {
+	var trait = object
+		, map;
 
-	// If the function was called with one argument, the argument should be
-	// an object whose properties are mapped to property descriptors on a new
-	// instance of Trait, so we delegate to the trait function.
-	// If the function was called with more than one argument, those arguments
-	// should be instances of Trait or plain property descriptor maps
-	// whose properties should be mixed into a new instance of Trait,
-	// so we delegate to the compose function.
+	if (!(object instanceof Trait)) {
+		// If passed `object` is not already an instance of `Trait` we create
+		// a property descriptor `map` containing descriptors of own properties of
+		// a given `object`. `map` is used to create a `Trait` instance after all
+		// properties are mapped. Please note that we can't create trait and then
+		// just copy properties into it since that will fails for inherited
+		// 'read-only' properties.
+		map = {};
 
-	return trait2 === undefined
-		? trait(trait1)
-		: compose.apply(null, arguments);
+		// Each own property of a given `object` is mapped to a data property, who's
+		// value is a property descriptor.
+		forEach(keys(object), function (name) {
+
+			// If property of an `object` is equal to a `Trait.required`, it means
+			// that it was marked as 'required' property, in which case we map it
+			// to 'required' property.
+			if (Trait.required == getOwnPropertyDescriptor(object, name).value) {
+				map[name] = {
+					value: RequiredPropertyDescriptor(name),
+					enumerable: true
+				};
+
+			// Otherwise property is mapped to it's property descriptor.
+			} else {
+				map[name] = {
+					value: getOwnPropertyDescriptor(object, name),
+					enumerable: true
+				};
+			}
+		});
+
+		trait = objectCreate(Trait.prototype, map);
+	}
+
+	return trait;
 }
 
-freeze(defineProperties(Trait.prototype, {
+Trait.prototype.create = function (prototype, properties) {
+	prototype = prototype || Object.prototype;
+	properties = (properties != null)
+		? compose(Trait(properties), this)
+		: this;
+	return create(prototype, properties);
+};
+
+Trait.prototype.resolve = function (resolutions) {
+	return resolve(resolutions, this);
+};
+
+Trait.compose = compose;
+
+Trait.required = objectCreate(Object.prototype, {
 	toString: {
 		value: function toString() {
-			return '[object ' + this.constructor.name + ']';
-		}
-	},
-
-	/**
-	 * `create` is like `Object.create`, except that it ensures that:
-	 *    - An exception is thrown if this trait defines a property that is
-	 *      marked as required property and same named property is not
-	 *      found in a given `prototype`.
-	 *    - An exception is thrown if this trait contains property that is
-	 *      marked as 'conflict' property.
-	 * @param {Object}
-	 *    prototype of the compared object
-	 * @returns {Object}
-	 *    An object with all of the properties described by the trait.
-	 */
-	create: {
-		value: function createTrait(prototype) {
-			return create(undefined === prototype
-				? Object.prototype
-				: prototype,
-			this);
-		},
-		enumerable: true
-	},
-
-	/**
-	 * Composes a new resolved trait, with all the same properties as the original
-	 * trait, except that all properties whose name is an own property of
-	 * `resolutions` will be renamed to the value of `resolutions[name]`. If
-	 * `resolutions[name]` is `null`, the property is marked as 'required'.
-	 * @param {Object} resolutions
-	 *   An object whose own properties serve as a mapping from old names to new
-	 *   names, or to `null` if the property should be excluded.
-	 * @returns {Object}
-	 *   New trait with the same own properties as the original trait but renamed.
-	 */
-	resolve: {
-		value: function resolveTrait(resolutions) {
-			return resolve(resolutions, this);
-		},
-		enumerable: true
-	}
-}));
-
-/**
- * @see compose
- */
-Trait.compose = freeze(compose);
-freeze(compose.prototype);
-
-/**
- * Constant singleton, representing placeholder for required properties.
- * @type {Object}
- */
-Trait.required = freeze(Object.create(Object.prototype, {
-	toString: {
-		value: freeze(function toString() {
 			return '<Trait.required>';
-		})
+		}
 	}
-}));
-freeze(Trait.required.toString.prototype);
+});
 
-module.exports = freeze(Trait);
+module.exports = Trait;
