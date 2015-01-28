@@ -7,9 +7,6 @@ node_modules/mocha-sauce/*
 !node_modules/mocha-sauce/client.js
 node_modules/.bin
 node_modules/buddy
-node_modules/lodash.bind
-node_modules/lodash.foreach
-node_modules/lodash.keys
-node_modules/lodash.some
+node_modules/lodash-compat
 node_modules/term-canvas
 .buddy-filelog
