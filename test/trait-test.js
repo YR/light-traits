@@ -1,6 +1,6 @@
 // Lodash complains about missing 'global'
 window.global = window;
-var some = require('lodash-compat/collection/some@3.0.0')
+var some = require('lodash-compat/collection/some')
 	, trait, expect;
 
 try {
