@@ -1,14 +1,12 @@
-// Lodash complains about missing 'global'
-window.global = window;
 var some = require('lodash-compat/collection/some')
 	, trait, expect;
 
 try {
 	T = require('../index.js');
 	expect = require('expect.js');
-	require('./sauce.js');
 } catch (err) {
-	T = require('./trait');
+	console.log(err)
+	T = require('./traits');
 	expect = window.expect;
 }
 

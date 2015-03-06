@@ -1,44 +1,47 @@
 {
-  "name": "trait",
-  "description": "An implementation of traits in JavaScript",
+  "name": "simple-traits",
+  "description": "A simple implementation of traits in JavaScript",
   "version": "1.1.1",
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "contributors": [
-    {
-      "name": "Alexander Pope",
-      "email": "alexander.pope@nrk.no"
-    }
+    "Alexander Pope <alexander.pope@nrk.no>"
+  ],
+  "keywords": [
+    "trait",
+    "traits",
+    "composition",
+    "inheritance"
   ],
   "dependencies": {
     "lodash-compat": "3.1.0"
   },
   "devDependencies": {
-    "mocha": "*",
+    "buddy": "buddy",
     "expect.js": "*",
-    "buddy": "popeindustries/buddy",
-    "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
-    "term-canvas": "*"
+    "mocha": "*"
   },
   "main": "index.js",
-  "repository": "git://github.com/YR/trait.git",
+  "repository": "git://github.com/YR/simple-traits.git",
   "license": "MIT",
-  "private": true,
   "scripts": {
-    "test": "buddy build && mocha-phantomjs test/test-runner.html",
-    "sauce": "node test/sauce.js"
+    "test": "NODE_ENV=test mocha ./test/traits-test.js --reporter spec",
+    "test-client": "NODE_ENV=test buddy build && open ./test/test-runner.html"
   },
   "buddy": {
     "build": {
       "js": {
         "targets": [{
           "input": "test/src/index.js",
-          "output": "test/trait.js",
-          "boilerplate": true
+          "output": "test/traits.js",
+          "boilerplate": true,
+          "bootstrap": true
         }]
       }
     },
     "server": {
       "port": 8000
     }
-  }
+  },
+  "readmeFilename": "README.md",
+  "readme": "A simple trait composition library based on `Object.create`. This is a fork of [light-traits](https://github.com/Gozala/light-traits) to improve overall flexibility, as well as add basic polyfills for `Object.create` and property descriptor handling.\n\n## Usage\n\n```js\nvar Trait = require('trait');\n\nvar T = Trait.compose(\n  require('../shared/baseTrait'),\n  Trait({\n    someProp: Trait.required,\n    someMethod: function () {\n      console.log(this.someProp + ' world!');\n    }\n  })\n);\n\nmodule.exports = function () {\n  return T.create(Object.prototype, {\n    someProp: 'hello'\n  });\n};\n```\n\n## Traits\n\nTraits are a simple mechanism for representing reusable and composable functionality. They are more robust alternatives to *mixins* and *multiple inheritance* because name clashes must be explicitly resolved, and because composition is commutative and associative (ie. the order of traits in a composition is irrelevant).\n\nUse traits to share functionality between similar objects without duplicating code or creating complex inheritance chains.\n\n### Trait Creation\n\nTo create a trait, call the `Trait` factory function exported by this module, passing it an object that specifies the properties of the trait.\n\n```js\nvar t = Trait({\n  foo: Trait.required,\n  bar: function bar () {\n    return this.foo;\n  },\n  baz: 'baz'\n});\n```\n\nTraits can both provide and require properties. A *provided* property is a property for which the trait itself provides a value. A *required* property is a property that the trait needs in order to function correctly but for which it doesn't provide a value.\n\nRequired properties must be provided by another trait or by an object with a trait. Creation of an object with a trait will fail if required properties are not provided. Specify a required property by setting the value of the property to `Trait.required`.\n\n### Object Creation\n\nCreate objects with a single trait by calling the trait's `create` method. The method takes two arguments, the object to serve as the new object's prototype, and an optional object defining properties of the new object. If no prototype is specified, the new object's prototype will be `Object.prototype`.\n\n```js\nvar myTrait = Trait({\n  foo: 'foo',\n  bar: 2\n});\nvar foo1 = t.create();\nvar foo2 = t.create(Object.prototype, {\n  baz: 'baz'\n});\n```\n\n### Trait Composition\n\nTraits are designed to be composed with other traits to create objects with the properties of multiple traits. To compose an object with multiple traits, you first create a composite trait and then use it to create the object. A composite trait is a trait that contains all of the properties of the traits from which it is composed.\n\n```js\nvar tBase = Trait({\n  foo: Trait.required,\n  id: function () {\n    return this.foo;\n  }\n});\nvar tBaseFoo = Trait({\n  foo: 'foo'\n});\n\nvar tFoo = Trait.compose(tBase, tBaseFoo);\n```\n\n### Trait Resolution\n\nComposite traits have conflicts when two of the traits in the composition provide properties with the same name but different values (when compared using the `===` strict equality operator).\n\n```js\nvar t1 = Trait({\n  foo: 'foo',\n  bar: 'bar'\n});\nvar t2 = Trait({\n  bar: 'foo',\n});\n\nvar tc = Trait.compose(t1, t2); => Error 'remaining conflicting property'\n```\n\nAttempting to create an object from a composite trait with conflicts throws a `remaining conflicting property` exception. To create objects from such traits, you must first resolve the conflict.\n\nConflit resolution is achieved by excluding or renaming the conflicting property of one of the traits. Excluding a property removes it from the composition, so the composition only acquires the property from the other trait. Renaming a property gives it a new, non-conflicting name at which it can be accessed.\n\nIn both cases, you call the `resolve` method on the trait whose property you want to exclude or rename, passing it an object. Each key in the object is the name of a conflicting property: each value is either `null` to exclude the property, or a string representing the new name of the property.\n\nFor example, the conflict in the previous example could be resolved by excluding the `bar` property of the first trait:\n\n```js\nvar tc = Trait(t1.resolve({bar: null}), t2);\n```\n\nIt could also be resolved by renaming the `bar` property of the first trait:\n\n```js\nvar tc = Trait(t1.resolve({bar: 'bar2'}), t2);\n```\n\nWhen you resolve a conflict, the same-named property of the other trait (the one that wasn't excluded or renamed) remains available in the composition under its original name."
 }

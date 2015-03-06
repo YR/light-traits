@@ -1,4 +1,4 @@
-A light trait composition library based on `Object.create`. This is a fork of [light-traits](https://github.com/Gozala/light-traits) to improve overall flexibility, as well as add basic polyfills for `Object.create` and property descriptor handling.
+A simple trait composition library based on `Object.create`. This is a fork of [light-traits](https://github.com/Gozala/light-traits) to improve overall flexibility, as well as add basic polyfills for `Object.create` and property descriptor handling.
 
 ## Usage
 
