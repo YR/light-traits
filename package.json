@@ -1,7 +1,7 @@
 {
   "name": "simple-traits",
   "description": "A simple implementation of traits in JavaScript",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)",
   "contributors": [
     "Alexander Pope <alexander.pope@nrk.no>"
