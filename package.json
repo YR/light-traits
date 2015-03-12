@@ -13,10 +13,10 @@
     "inheritance"
   ],
   "dependencies": {
-    "lodash-compat": "3.1.0"
+    "lodash-compat": "3.5.0"
   },
   "devDependencies": {
-    "buddy": "buddy",
+    "buddy": "*",
     "expect.js": "*",
     "mocha": "*"
   },
