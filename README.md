@@ -3,7 +3,7 @@ A simple trait composition library based on `Object.create`. This is a fork of [
 ## Usage
 
 ```js
-var Trait = require('trait');
+var Trait = require('simple-traits');
 
 var T = Trait.compose(
   require('../shared/baseTrait'),
